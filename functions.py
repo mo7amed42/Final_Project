@@ -2,19 +2,16 @@ import pandas as pd
 import plotly.graph_objs as go
 
 def load_data(file_path):
-    # Load the Excel file
     df_data = pd.read_excel(file_path, sheet_name='Foundation Reactions', skiprows=7, header=None)
     df_data.columns = ['Support', "X Coordinate", "Y Coordinate", "Z Coordinate", "TBR", "TBR", "TBR", "Combination", "Fx [kN]", "Fy [kN]", "Fz [kN]", "Mx [kNm]", "My [kNm]", "Mz [kNm]"]
     df_data.drop(df_data.columns[[4, 5, 6]], axis=1, inplace=True)
     df_data = df_data.iloc[:-7]
 
-    # This method fills in the NaN in the merged cells.
     df_data_first_part = df_data.iloc[:, :4]
     df_data_rest = df_data.iloc[:, 4:]
     df_data_first_part = df_data_first_part.ffill(axis=0)
     df_data = pd.concat([df_data_first_part, df_data_rest], axis=1)
 
-    # Create MultiIndex based on Support column
     df_data.set_index(['Support', df_data.groupby('Support').cumcount() + 1], inplace=True)
     df_data.index.names = ['Support', '']
 
@@ -151,18 +148,15 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
     if safe_pile_capacity is not None:
         safe_pile_capacity = float(safe_pile_capacity)
         if not (100 < safe_pile_capacity <= 10000):
-            print("Pile capacity is too low or too high")
-            return
+            raise ValueError("Pile capacity is too low or too high")
 
-    if safe_pile_tensile_capacity != '':
+    if safe_pile_tensile_capacity is not None:
         try:
             safe_pile_tensile_capacity = float(safe_pile_tensile_capacity)
             if safe_pile_tensile_capacity >= 0:
-                print("Please enter a negative value for tensile capacity")
-                return
+                raise ValueError("Please enter a negative value for tensile capacity")
         except ValueError:
-            print("Invalid input for tensile capacity")
-            return
+            raise ValueError("Invalid input for tensile capacity")
     else:
         safe_pile_tensile_capacity = None
 
@@ -177,8 +171,7 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
 
         over_capacity_supports = new_df[new_df['Piles Required'] > 6]['Support'].tolist()
         if over_capacity_supports:
-            print(f"The number of piles exceeded 6 for the following supports: {', '.join(over_capacity_supports)}")
-            return
+            raise ValueError(f"The number of piles exceeded 6 for the following supports: {', '.join(over_capacity_supports)}")
 
         unique_z_levels = new_df['Z Coordinate'].unique()
         for z in unique_z_levels:
