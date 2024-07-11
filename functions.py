@@ -2,16 +2,30 @@ import pandas as pd
 import plotly.graph_objs as go
 
 def load_data(file_path):
-    df_data = pd.read_excel(file_path, sheet_name='Foundation Reactions', skiprows=7, header=None)
-    df_data.columns = ['Support', "X Coordinate", "Y Coordinate", "Z Coordinate", "TBR", "TBR", "TBR", "Combination", "Fx [kN]", "Fy [kN]", "Fz [kN]", "Mx [kNm]", "My [kNm]", "Mz [kNm]"]
-    df_data.drop(df_data.columns[[4, 5, 6]], axis=1, inplace=True)
+    try:
+        df_data = pd.read_excel(file_path, sheet_name='Foundation Reactions', skiprows=7, header=None)
+    except Exception as e:
+        raise ValueError(f"Error reading Excel file: {e}")
+
+    if df_data.empty:
+        raise ValueError("DataFrame is empty after reading the Excel file.")
+
+    # Define meaningful column names based on your actual data structure
+    column_names = ['Support', 'X Coordinate', 'Y Coordinate', 'Z Coordinate', 'TBR1', 'TBR2', 'TBR3', 'Combination', 'Fx [kN]', 'Fy [kN]', 'Fz [kN]', 'Mx [kNm]', 'My [kNm]', 'Mz [kNm]']
+    
+    # Rename columns
+    df_data.columns = column_names
+    
+    # Drop unnecessary columns
+    df_data.drop(columns=['TBR1', 'TBR2', 'TBR3'], inplace=True)
+
+    # Drop last 7 rows
     df_data = df_data.iloc[:-7]
 
-    df_data_first_part = df_data.iloc[:, :4]
-    df_data_rest = df_data.iloc[:, 4:]
-    df_data_first_part = df_data_first_part.ffill(axis=0)
-    df_data = pd.concat([df_data_first_part, df_data_rest], axis=1)
+    # Forward fill first part
+    df_data[['Support', 'X Coordinate', 'Y Coordinate', 'Z Coordinate']] = df_data[['Support', 'X Coordinate', 'Y Coordinate', 'Z Coordinate']].ffill()
 
+    # Set index
     df_data.set_index(['Support', df_data.groupby('Support').cumcount() + 1], inplace=True)
     df_data.index.names = ['Support', '']
 
