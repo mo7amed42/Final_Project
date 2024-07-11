@@ -10,7 +10,7 @@ def main():
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=['xls', 'xlsx'])
 
     use_example = st.sidebar.checkbox('Use example Excel file')
-    example_file_path = 'TSD Foundation Reaction Export.xlsx'  # So if the user does not wish to upload an excel sheet the user can use a default excel sheet.
+    example_file_path = 'TSD Foundation Reaction Export.xlsx'  # Default example file path
 
     if use_example:
         if os.path.exists(example_file_path):
@@ -37,17 +37,15 @@ def main():
     # Dropdown menu for selecting the maximum forces and moments
     option = st.selectbox('Choose an option:', ['Maximum Fx', 'Maximum Fy', 'Maximum Fz', 'Maximum Mx', 'Maximum My', 'Maximum Mz'])
 
-    # Dropdown for specifying the number of piles
-    if option == 'Number of Piles':
-        safe_pile_capacity = st.number_input('Safe Pile Capacity [kN]:', min_value=100.0, max_value=10000.0, step=1.0, value=600.0)
-        safe_pile_tensile_capacity = st.number_input('Safe Pile Tensile Capacity [kN] (optional, enter negative value):', value=-100.0)
-        st.write("(Note: Please enter a negative value for tensile capacity)")
+    # Inputs for safe pile capacity and tensile capacity
+    safe_pile_capacity = st.number_input('Safe Pile Capacity [kN]:', min_value=100.0, max_value=10000.0, step=1.0, value=600.0)
+    safe_pile_tensile_capacity = st.number_input('Safe Pile Tensile Capacity [kN] (optional, enter negative value):', value=-100.0)
+    st.write("(Note: Please enter a negative value for tensile capacity)")
 
-        if st.button('Generate Plot'):
-            st.plotly_chart(generate_plot(option, new_df, safe_pile_capacity, safe_pile_tensile_capacity))
-    else:
-        if st.button('Generate Plot'):
-            st.plotly_chart(generate_plot(option, new_df))
+    # Button to generate the plot
+    if st.button('Generate Now'):
+        st.plotly_chart(generate_plot(option, new_df, safe_pile_capacity, safe_pile_tensile_capacity))
 
 if __name__ == '__main__':
     main()
+
