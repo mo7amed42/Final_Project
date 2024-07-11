@@ -1,6 +1,8 @@
 import streamlit as st
 from functions import load_data, generate_data_for_display, generate_plot
 import os
+import plotly.graph_objs as go
+
 
 def main():
     st.title('Foundation Reactions Analysis')
@@ -35,7 +37,7 @@ def main():
     st.plotly_chart(generate_plot("Coordinates", new_df))
 
     # Dropdown menu for selecting the maximum forces and moments
-    option = st.selectbox('Choose an option:', ['Maximum Fx', 'Maximum Fy', 'Maximum Fz', 'Maximum Mx', 'Maximum My', 'Maximum Mz'])
+    option = st.selectbox('Choose an option:', ['Maximum Fx', 'Maximum Fy', 'Maximum Fz', 'Maximum Mx', 'Maximum My', 'Maximum Mz', "Number of Piles"])
 
     # Inputs for safe pile capacity and tensile capacity
     safe_pile_capacity = st.number_input('Safe Pile Capacity [kN]:', min_value=100.0, max_value=10000.0, step=1.0, value=600.0)
@@ -48,4 +50,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
 
