@@ -169,7 +169,7 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
 
     # Always add number of piles if safe_pile_capacity is provided
     if safe_pile_capacity is not None:
-        max_loads = new_df[['Max +Fz', 'Max -Fz']].apply(lambda x: x if x > 0 else 0, axis=1)
+        max_loads = new_df[['Max +Fz', 'Max -Fz']].applymap(lambda x: x if x > 0 else 0, axis=1)
         required_piles = max_loads.apply(lambda x: calculate_piles(safe_pile_capacity, x))
         fig.add_trace(go.Bar(
             x=new_df['Support'],
