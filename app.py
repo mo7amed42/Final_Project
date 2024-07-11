@@ -10,7 +10,7 @@ def main():
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=['xls', 'xlsx'])
 
     use_example = st.sidebar.checkbox('Use example Excel file')
-    example_file_path = 'TSD Foundation Reaction Export.xlsx'  #So if the user does not wish to upload an excel sheet the user can use a default excel sheet.
+    example_file_path = 'TSD Foundation Reaction Export.xlsx'  # So if the user does not wish to upload an excel sheet the user can use a default excel sheet.
 
     if use_example:
         if os.path.exists(example_file_path):
@@ -30,19 +30,24 @@ def main():
     # Generate the data for display
     new_df = generate_data_for_display(df_data)
 
-    # User inputs
-    option = st.selectbox('Choose an option:', ['Maximum Fx', 'Maximum Fy', 'Maximum Fz', 'Maximum Mx', 'Maximum My', 'Maximum Mz', 'Number of Piles'])
+    # Plot initial coordinates
+    st.subheader("Support Points Coordinates")
+    st.plotly_chart(generate_plot("Coordinates", new_df))
 
+    # Dropdown menu for selecting the maximum forces and moments
+    option = st.selectbox('Choose an option:', ['Maximum Fx', 'Maximum Fy', 'Maximum Fz', 'Maximum Mx', 'Maximum My', 'Maximum Mz'])
+
+    # Dropdown for specifying the number of piles
     if option == 'Number of Piles':
         safe_pile_capacity = st.number_input('Safe Pile Capacity [kN]:', min_value=100.0, max_value=10000.0, step=1.0, value=600.0)
         safe_pile_tensile_capacity = st.number_input('Safe Pile Tensile Capacity [kN] (optional, enter negative value):', value=-100.0)
         st.write("(Note: Please enter a negative value for tensile capacity)")
 
         if st.button('Generate Plot'):
-            generate_plot(option, new_df, safe_pile_capacity, safe_pile_tensile_capacity)
+            st.plotly_chart(generate_plot(option, new_df, safe_pile_capacity, safe_pile_tensile_capacity))
     else:
         if st.button('Generate Plot'):
-            generate_plot(option, new_df)
+            st.plotly_chart(generate_plot(option, new_df))
 
 if __name__ == '__main__':
     main()

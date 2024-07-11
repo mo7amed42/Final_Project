@@ -201,7 +201,7 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
             )
 
             fig = go.Figure(data=[trace], layout=layout)
-            fig.show()
+            return fig
     else:
         force_component_map = {
             'Maximum Fx': 'Fx',
@@ -243,4 +243,4 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
             )
 
             fig = go.Figure(data=[trace], layout=layout)
-            fig.show()
+            return fig
