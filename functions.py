@@ -139,101 +139,170 @@ def generate_data_for_display(df_data):
     new_df = pd.DataFrame(new_data)
     return new_df
 
+
+def calculate_piles(safe_capacity, max_load):
+    if safe_capacity <= 0:
+        return 0
+    return -(-max_load // safe_capacity)  # Ceiling division
+
 def calculate_piles(safe_capacity, max_load):
     if safe_capacity <= 0:
         return 0
     return -(-max_load // safe_capacity)  # Ceiling division
 
 def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_capacity=None):
+    fig = go.Figure()
+
+    # Always add number of piles if safe_pile_capacity is provided
     if safe_pile_capacity is not None:
-        safe_pile_capacity = float(safe_pile_capacity)
-        if not (100 < safe_pile_capacity <= 10000):
-            raise ValueError("Pile capacity is too low or too high")
+        max_loads = new_df[['Max +Fz', 'Max -Fz']].apply(lambda x: x if x > 0 else 0, axis=1)
+        required_piles = max_loads.apply(lambda x: calculate_piles(safe_pile_capacity, x))
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=required_piles,
+            name='Number of Piles',
+            marker=dict(color='rgba(255, 0, 0, 0.5)')
+        ))
 
-    if safe_pile_tensile_capacity is not None:
-        try:
-            safe_pile_tensile_capacity = float(safe_pile_tensile_capacity)
-            if safe_pile_tensile_capacity >= 0:
-                raise ValueError("Please enter a negative value for tensile capacity")
-        except ValueError:
-            raise ValueError("Invalid input for tensile capacity")
-    else:
-        safe_pile_tensile_capacity = None
-
-    if option == 'Number of Piles':
-        new_df['Piles Required'] = new_df.apply(
-            lambda row: max(
-                calculate_piles(safe_pile_capacity, row['Max +Fz']),
-                calculate_piles(safe_pile_tensile_capacity, abs(row['Max -Fz'])) if safe_pile_tensile_capacity else 0
-            ),
-            axis=1
-        )
-
-        over_capacity_supports = new_df[new_df['Piles Required'] > 6]['Support'].tolist()
-        if over_capacity_supports:
-            raise ValueError(f"The number of piles exceeded 6 for the following supports: {', '.join(over_capacity_supports)}")
-
+    if option == 'Coordinates':
         unique_z_levels = new_df['Z Coordinate'].unique()
+
         for z in unique_z_levels:
             df_z = new_df[new_df['Z Coordinate'] == z]
             trace = go.Scatter(
                 x=df_z['X Coordinate'],
                 y=df_z['Y Coordinate'],
                 mode='markers+text',
-                marker=dict(color='rgb(200,170,100)', size=10),
-                text=df_z['Piles Required'].astype(str),
-                hoverinfo='text',
-                name=f'Support Points (Z={z})'
+                marker=dict(size=10),
+                text=df_z['Support'],
+                name=f'Z = {z}'
             )
+            fig.add_trace(trace)
 
-            layout = go.Layout(
-                title=f"(Z={z})",
-                xaxis=dict(title='X Coordinate'),
-                yaxis=dict(title='Y Coordinate'),
-                showlegend=False
-            )
+        fig.update_layout(
+            title='Support Coordinates',
+            xaxis_title='X Coordinate',
+            yaxis_title='Y Coordinate'
+        )
 
-            fig = go.Figure(data=[trace], layout=layout)
-            return fig
+    elif option in ['Maximum Fx', 'Maximum Fy', 'Maximum Mx', 'Maximum My']:
+        max_primary = new_df[f'Max +{option.split()[-1]}']
+        max_secondary = new_df[f'Max -{option.split()[-1]}']
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_primary,
+            name=f'Maximum +{option.split()[-1]}',
+            text=new_df[f'Max +{option.split()[-1]} Combination'],
+            hoverinfo='text+y'
+        ))
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_secondary,
+            name=f'Maximum -{option.split()[-1]}',
+            text=new_df[f'Max -{option.split()[-1]} Combination'],
+            hoverinfo='text+y'
+        ))
+
+        scatter_color = 'blue' if 'Fx' in option else 'green'  # Adjust scatter color based on option
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df[f'Max +{option.split()[-1]}'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name=f'Max +{option.split()[-1]}',
+            text=new_df[f'Max +{option.split()[-1]} Combination'],
+            hoverinfo='text'
+        ))
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df[f'Max -{option.split()[-1]}'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name=f'Max -{option.split()[-1]}',
+            text=new_df[f'Max -{option.split()[-1]} Combination'],
+            hoverinfo='text'
+        ))
+
+        fig.update_layout(
+            title=f'{option} for each Support',
+            xaxis_title='Support',
+            yaxis_title=f'{option} (kN or kNm)',
+            barmode='relative'
+        )
+
+    elif option == 'Maximum Fz':
+        max_Fz = new_df[['Max +Fz', 'Max -Fz']].max(axis=1)
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_Fz,
+            name='Maximum Fz',
+            text=new_df['Max +Fz Combination'] + ' / ' + new_df['Max -Fz Combination'],
+            hoverinfo='text+y'
+        ))
+
+        scatter_color = 'blue'  # Adjust scatter color as needed
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df['Max +Fz'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name='Max +Fz',
+            text=new_df['Max +Fz Combination'],
+            hoverinfo='text'
+        ))
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df['Max -Fz'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name='Max -Fz',
+            text=new_df['Max -Fz Combination'],
+            hoverinfo='text'
+        ))
+
+        fig.update_layout(
+            title='Maximum Fz for each Support',
+            xaxis_title='Support',
+            yaxis_title='Maximum Fz (kN)'
+        )
+
+    elif option == 'Maximum Mz':
+        max_Mz = new_df[['Max +Mz', 'Max -Mz']].max(axis=1)
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_Mz,
+            name='Maximum Mz',
+            text=new_df['Max +Mz Combination'] + ' / ' + new_df['Max -Mz Combination'],
+            hoverinfo='text+y'
+        ))
+
+        scatter_color = 'green'  # Adjust scatter color as needed
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df['Max +Mz'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name='Max +Mz',
+            text=new_df['Max +Mz Combination'],
+            hoverinfo='text'
+        ))
+        fig.add_trace(go.Scatter(
+            x=new_df['Support'],
+            y=new_df['Max -Mz'],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name='Max -Mz',
+            text=new_df['Max -Mz Combination'],
+            hoverinfo='text'
+        ))
+
+        fig.update_layout(
+            title='Maximum Mz for each Support',
+            xaxis_title='Support',
+            yaxis_title='Maximum Mz (kNm)'
+        )
+
     else:
-        force_component_map = {
-            'Maximum Fx': 'Fx',
-            'Maximum Fy': 'Fy',
-            'Maximum Fz': 'Fz',
-            'Maximum Mx': 'Mx',
-            'Maximum My': 'My',
-            'Maximum Mz': 'Mz'
-        }
-        force_component = force_component_map[option]
-        max_positive_col = f'Max +{force_component}'
-        max_positive_comb_col = f'Max +{force_component} Combination'
-        max_negative_col = f'Max -{force_component}'
-        max_negative_comb_col = f'Max -{force_component} Combination'
+        raise ValueError(f"Invalid option {option}.")
 
-        unique_z_levels = new_df['Z Coordinate'].unique()
-        for z in unique_z_levels:
-            df_z = new_df[new_df['Z Coordinate'] == z]
-            trace = go.Scatter(
-                x=df_z['X Coordinate'],
-                y=df_z['Y Coordinate'],
-                mode='markers',
-                marker=dict(color='rgb(200,170,100)', size=10),
-                text=df_z.apply(lambda row: f"Support: {row['Support']}<br>"
-                                            f"Max +{force_component}: {row[max_positive_col]}<br>"
-                                            f"+{force_component} Comb: {row[max_positive_comb_col]}<br>"
-                                            f"Max -{force_component}: {row[max_negative_col]}<br>"
-                                            f"-{force_component} Comb: {row[max_negative_comb_col]}",
-                                axis=1),
-                hoverinfo='text',
-                name=f'Support Points (Z={z})'
-            )
-
-            layout = go.Layout(
-                title=f"Support Forces Visualization (Z={z})",
-                xaxis=dict(title='X Coordinate'),
-                yaxis=dict(title='Y Coordinate'),
-                showlegend=False
-            )
-
-            fig = go.Figure(data=[trace], layout=layout)
-            return fig
+    return fig
