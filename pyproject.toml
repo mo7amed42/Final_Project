@@ -16,7 +16,9 @@ dependencies = [
     "plotly",
     "nbformat",
     "ipywidgets",
-    "IPython"
+    "IPython",
+    "shapely",
+    "streamlit",
     
 ]
 

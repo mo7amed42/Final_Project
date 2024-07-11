@@ -1,0 +1,10 @@
+numpy
+openpyxl
+pandas
+matplotlib
+plotly
+nbformat
+ipywidgets
+IPython
+shapely
+streamlit
