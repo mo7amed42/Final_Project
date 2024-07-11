@@ -10,7 +10,7 @@ def main():
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=['xls', 'xlsx'])
 
     use_example = st.sidebar.checkbox('Use example Excel file')
-    example_file_path = 'TSD Foundation Reaction Export.xlsx'  
+    example_file_path = 'TSD Foundation Reaction Export.xlsx'  #So if the user does not wish to upload an excel sheet the user can use a default excel sheet.
 
     if use_example:
         if os.path.exists(example_file_path):
