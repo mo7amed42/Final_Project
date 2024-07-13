@@ -1,7 +1,7 @@
 import streamlit as st
 from functions import load_data, generate_data_for_display, generate_plot
 import os
-import plotly.graph_objs as go
+
 
 
 def main():
