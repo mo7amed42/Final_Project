@@ -193,290 +193,6 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
             yaxis_title='Y Coordinate',
         )
 
-    elif option == 'Maximum Fx':
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fx: {row["Max +Fx"]} kN<br>Combination +Fx: {row["Max +Fx Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -Fx: {row["Max -Fx"]} kN<br>Combination -Fx: {row["Max -Fx Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fx: {row["Max +Fx"]} kN<br>Max -Fx: {row["Max -Fx"]} kN<br>Combination +Fx: {row["Max +Fx Combination"]}<br>Combination -Fx: {row["Max -Fx Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] Fx",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum Fx and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-
-    elif option == 'Maximum Fy':
-
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fy: {row["Max +Fy"]} kN<br>Combination +Fy: {row["Max +Fy Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -Fy: {row["Max -Fy"]} kN<br>Combination -Fy: {row["Max -Fy Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fy: {row["Max +Fy"]} kN<br>Max -Fy: {row["Max -Fy"]} kN<br>Combination +Fy: {row["Max +Fy Combination"]}<br>Combination -Fy: {row["Max -Fy Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] Fy",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum Fy and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-
-    elif option == 'Maximum Fz':
-
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fz: {row["Max +Fz"]} kN<br>Combination +Fz: {row["Max +Fz Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -Fz: {row["Max -Fz"]} kN<br>Combination -Fz: {row["Max -Fz Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Fz: {row["Max +Fz"]} kN<br>Max -Fz: {row["Max -Fz"]} kN<br>Combination +Fz: {row["Max +Fz Combination"]}<br>Combination -Fz: {row["Max -Fz Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] Fz",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum Fz and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-    
-
-    elif option == 'Maximum Mx':
-
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Mx: {row["Max +Mx"]} kN<br>Combination +Mx: {row["Max +Mx Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -Mx: {row["Max -Mx"]} kN<br>Combination -Mx: {row["Max -Mx Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Mx: {row["Max +Mx"]} kN<br>Max -Mx: {row["Max -Mx"]} kN<br>Combination +Mx: {row["Max +Mx Combination"]}<br>Combination -Mx: {row["Max -Mx Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] Mx",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum Mx and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-        
-    elif option == 'Maximum My':
-
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +My: {row["Max +My"]} kN<br>Combination +My: {row["Max +My Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -My: {row["Max -My"]} kN<br>Combination -My: {row["Max -My Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +My: {row["Max +My"]} kN<br>Max -My: {row["Max -My"]} kN<br>Combination +My: {row["Max +My Combination"]}<br>Combination -My: {row["Max -My Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] My",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum My and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-        
-
-    elif option == 'Maximum Mz':
-
-        max_primary = new_df[f'Max +{option.split()[-1]}']
-        max_secondary = new_df[f'Max -{option.split()[-1]}']
-
-        fig = make_subplots(rows=2, cols=1)
-
-        hovertext01 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Mz: {row["Max +Mz"]} kN<br>Combination +Mz: {row["Max +Mz Combination"]}', axis=1)
-        hovertext02 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max -Mz: {row["Max -Mz"]} kN<br>Combination -Mz: {row["Max -Mz Combination"]}', axis=1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_primary,
-            name=f'Maximum +{option.split()[-1]}',
-            text=hovertext01,
-            hoverinfo='text'
-        ), row= 1, col= 1)
-        fig.add_trace(go.Bar(
-            x=new_df['Support'],
-            y=max_secondary,
-            name=f'Maximum -{option.split()[-1]}',
-            text=hovertext02,
-            hoverinfo='text'
-        ), row=1, col=1)
-
-        scatter_color = 'blue' # Adjust scatter color based on option
-        hovertext03 = new_df.apply(lambda row: f'Support: {row["Support"]}<br>Max +Mz: {row["Max +Mz"]} kN<br>Max -Mz: {row["Max -Mz"]} kN<br>Combination +Mz: {row["Max +Mz Combination"]}<br>Combination -Mz: {row["Max -Mz Combination"]}', axis=1)
-
-        fig.add_trace(go.Scatter(
-            x=new_df['X Coordinate'],
-            y=new_df["Y Coordinate"],
-            mode='markers',
-            marker=dict(color=scatter_color),
-            name="Max [+/-] Mz",
-            text=hovertext03,
-            hoverinfo='text'
-        ), row=2, col=1)
-
-        fig.update_layout(
-        title='Maximum Mz and Support Coordinates',
-        autosize=False,
-        width=1300,
-        height=900 
-        
-        )
-
-        fig.update_yaxes(automargin=True)
-        
-
     elif option == 'Number of Piles':
         if safe_pile_capacity is None:
             raise ValueError("Safe pile capacity must be provided for 'Number of Piles' option")
@@ -526,6 +242,75 @@ def generate_plot(option, new_df, safe_pile_capacity=None, safe_pile_tensile_cap
         )
 
 
+    elif 'maximum' in option.lower():
+        force_dir = option.split()[-1]
+        max_primary = new_df[f'Max +{force_dir}']
+        max_secondary = new_df[f'Max -{force_dir}']
+
+        fig = make_subplots(rows=2, cols=1)
+
+        hovertext01 = new_df.apply(
+            lambda row: (
+                f'Support: {row["Support"]}<br>'
+                f'Max +{force_dir}: {row[f"Max +{force_dir}"]} kN<br>'
+                f'Combination +Fx: {row[f"Max +{force_dir} Combination"]}'
+            ), axis=1
+        )
+        hovertext02 = new_df.apply(
+            lambda row: (
+                f'Support: {row["Support"]}<br>'
+                f'Max -{force_dir}: {row[f"Max -{force_dir}"]} kN<br>'
+                f'Combination -Fx: {row[f"Max -{force_dir} Combination"]}'
+            ), axis=1
+        )
+
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_primary,
+            name=f'Maximum +{force_dir}',
+            text=hovertext01,
+            hoverinfo='text'
+        ), row= 1, col= 1)
+        fig.add_trace(go.Bar(
+            x=new_df['Support'],
+            y=max_secondary,
+            name=f'Maximum -{force_dir}',
+            text=hovertext02,
+            hoverinfo='text'
+        ), row=1, col=1)
+
+        scatter_color = 'blue' # Adjust scatter color based on option
+        hovertext03 = new_df.apply(
+            lambda row: (
+                f'Support: {row["Support"]}<br>'
+                f'Max +{force_dir}: {row[f"Max +{force_dir}"]} kN<br>'
+                f'Max -{force_dir}: {row[f"Max -{force_dir}"]} kN<br>'
+                f'Combination +{force_dir}: {row[f"Max +{force_dir} Combination"]}<br>'
+                f'Combination -{force_dir}: {row[f"Max -{force_dir} Combination"]}'
+            )
+            ,axis=1
+        )
+
+        fig.add_trace(go.Scatter(
+            x=new_df['X Coordinate'],
+            y=new_df["Y Coordinate"],
+            mode='markers',
+            marker=dict(color=scatter_color),
+            name=f"Max [+/-] {force_dir}",
+            text=hovertext03,
+            hoverinfo='text'
+        ), row=2, col=1)
+
+        fig.update_layout(
+        title=f'Maximum {force_dir} and Support Coordinates',
+        autosize=False,
+        width=1300,
+        height=900 
+        
+        )
+
+        fig.update_yaxes(automargin=True)
+    
     else:
         raise ValueError(f"Invalid option {option}.")
 
